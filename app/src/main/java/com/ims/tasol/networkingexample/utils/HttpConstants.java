@@ -10,6 +10,9 @@ public class HttpConstants {
     public static final String FILEUPLOADJSON="/uploadImage.php";
     public static final String FILEUPLOADJSON1="/upload.php";
 
+    public static final String SINGLEUSER="/singleUserData.php";
+
+
     //Retrofit 2.0 onwards
     public static final String BASEALLUSERDATA=baseUrl+"/studentdetails.php";
 }

@@ -1,6 +1,8 @@
 package com.ims.tasol.networkingexample;
 
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,9 +20,12 @@ import android.widget.Toast;
 import com.ims.tasol.networkingexample.model.AddUser;
 import com.ims.tasol.networkingexample.model.DataPojo;
 import com.ims.tasol.networkingexample.model.ListData;
+import com.ims.tasol.networkingexample.model.StudentData;
+import com.ims.tasol.networkingexample.model.StudentDataList;
 import com.ims.tasol.networkingexample.model.Task;
 import com.ims.tasol.networkingexample.model.TaskData;
 import com.ims.tasol.networkingexample.retrofit.RaytaApi;
+import com.ims.tasol.networkingexample.retrofit.RaytaApiClient;
 import com.ims.tasol.networkingexample.retrofit.RaytaServiceClass;
 import com.squareup.picasso.Picasso;
 
@@ -33,13 +38,15 @@ import retrofit2.Response;
 
 
 public class MainActivity extends AppCompatActivity {
-    Button btnAdd,btnRefresh,btnUpload,btnSingleUser;
+    Button btnRefresh,btnSingleUser;
     ListData listData;
     List<DataPojo> dataList;
     RecyclerView rvStudent;
     UserAdapter userAdapter;
     String studentID=null;
     ProgressBar pbLoader;
+    FloatingActionButton fbAddUser;
+    SwipeRefreshLayout swipeRefresh;
     RaytaServiceClass serviceClass;
 
     @Override
@@ -48,10 +55,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btnRefresh=(Button)findViewById(R.id.btnRefresh);
-        btnUpload=(Button)findViewById(R.id.btnUpload);
-        btnAdd=(Button)findViewById(R.id.btnAdd);
         pbLoader=(ProgressBar)findViewById(R.id.pbLoader);
         btnSingleUser=(Button)findViewById(R.id.btnSingleUser);
+
+        fbAddUser=(FloatingActionButton)findViewById(R.id.fbAddUser);
+        swipeRefresh=(SwipeRefreshLayout)findViewById(R.id.swipeRefresh);
 
         dataList= new ArrayList<>();
         rvStudent=(RecyclerView)findViewById(R.id.rvStudent);
@@ -64,6 +72,12 @@ public class MainActivity extends AppCompatActivity {
         rvStudent.setAdapter(userAdapter);
 
 
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getAllUsers();
+            }
+        });
 
         btnSingleUser.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,13 +87,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        btnUpload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent picIntent= new Intent(MainActivity.this,UploadImageActivity.class);
-                startActivity(picIntent);
-            }
-        });
         btnRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 getAllUsers();
             }
         });
-        btnAdd.setOnClickListener(new View.OnClickListener() {
+        fbAddUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 studentID=String.valueOf(dataList.size()+1);
@@ -99,13 +106,24 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        pbLoader.setVisibility(View.VISIBLE);
+        getAllUsers();
+    }
+
     public void getAllUsers(){
         RaytaApi service= RaytaServiceClass.getApiService();
         Call<ListData> call=service.getAllUser();
+        Log.v("@@@WWE","Retrofit Request Method =  "+call.request().method());
+        Log.v("@@@WWE","Retrofit Request Body =  "+call.request().body());
+        Log.v("@@@WWE","Retrofit Request Url = "+call.request().url());
         call.enqueue(new Callback<ListData>() {
             @Override
             public void onResponse(Call<ListData> call, Response<ListData> response) {
                 pbLoader.setVisibility(View.GONE);
+                swipeRefresh.setRefreshing(false);
                 Log.v("@@@","Response");
                 if (response.isSuccessful()){
                     Log.v("@@@","Sucess");
@@ -124,13 +142,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getSingleUser(){
-//        TaskData taskData = new TaskData();
-//        taskData.setUserID("1");
-//        Task task= new Task();
-//        task.setTask("singleUser");
-//        task.setTaskData(taskData);
-//
-//        RaytaApi service= RaytaServiceClass.getApiService();
+        TaskData taskData = new TaskData();
+        taskData.setUserID("1");
+        Task task= new Task();
+        task.setTask("singleUser");
+        task.setTaskData(taskData);
+
+        RaytaApi service= RaytaApiClient.getApiService();
+        Call<StudentDataList>call=service.getSingleUserObj(task);
+        Log.v("@@@WWE","Retrofit Request Method =  "+call.request().method());
+        Log.v("@@@WWE","Retrofit Request Body =  "+call.request().body().contentType());
+        Log.v("@@@WWE","Retrofit Request Url = "+call.request().url());
+        call.enqueue(new Callback<StudentDataList>() {
+            @Override
+            public void onResponse(Call<StudentDataList> call, Response<StudentDataList> response) {
+
+                Log.v("@@@WWE","Response");
+                List<StudentData> list=new ArrayList<StudentData>();
+                if (response.isSuccessful()){
+                    Log.v("@@@WWE","Sucess Single User Details");
+                    list=response.body().getData();
+                    printSingleStudentDetails(list);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<StudentDataList> call, Throwable t) {
+                Log.v("@@@WWE","Failure ");
+                Log.v("@@@WWE","Failure Message "+t.getMessage());
+            }
+        });
 //        Call<ListData> call=service.getSingleUserObj("",task);
 //        call.enqueue(new Callback<ListData>() {
 //            @Override
@@ -152,6 +193,14 @@ public class MainActivity extends AppCompatActivity {
     public void printStudentDetails(List<DataPojo> list){
         Log.v("@@@WWe","Student List");
         for (DataPojo dataPojo:list){
+            Log.d("Student ID ",String.valueOf(dataPojo.getUserId()));
+            Log.d("Student Name ",dataPojo.getUserName());
+            Log.d("Student Age ",dataPojo.getUserAge());
+        }
+    }
+    public void printSingleStudentDetails(List<StudentData> list){
+        Log.v("@@@WWe","Student List");
+        for (StudentData dataPojo:list){
             Log.d("Student ID ",String.valueOf(dataPojo.getUserId()));
             Log.d("Student Name ",dataPojo.getUserName());
             Log.d("Student Age ",dataPojo.getUserAge());
@@ -193,6 +242,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+            viewHolder.imgEditImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent= new Intent(MainActivity.this,UploadImageActivity.class);
+                    intent.putExtra("INT_STDID",dataList.get(position).getUserId());
+                    startActivity(intent);
+                }
+            });
+
             Picasso.with(MainActivity.this)
                     .load(dataList.get(position).getProfilePhoto())
                     .placeholder(R.drawable.placeholder)
@@ -206,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onError() {
-                            viewHolder.pbProfileImage.setVisibility(View.VISIBLE);
+                            viewHolder.pbProfileImage.setVisibility(View.GONE);
                         }
                     });
 
@@ -220,17 +278,19 @@ public class MainActivity extends AppCompatActivity {
     public class UserViewHolder extends RecyclerView.ViewHolder{
 
         public TextView studentName,studentAge;
-        public Button btnDelete,btnUpdate;
-        public ImageView profileImage;
+        public ImageView btnDelete,btnUpdate;
+        public ImageView profileImage,imgEditImage;
         public ProgressBar pbProfileImage;
         public UserViewHolder(View itemView) {
             super(itemView);
-            btnDelete=(Button)itemView.findViewById(R.id.btnDelete);
-            btnUpdate=(Button)itemView.findViewById(R.id.btnUpdate);
+            btnDelete=(ImageView)itemView.findViewById(R.id.btnDelete);
+            btnUpdate=(ImageView)itemView.findViewById(R.id.btnUpdate);
             studentName=(TextView)itemView.findViewById(R.id.studentName);
             studentAge=(TextView)itemView.findViewById(R.id.studenAge);
             profileImage=(ImageView)itemView.findViewById(R.id.profileImage);
             pbProfileImage=(ProgressBar) itemView.findViewById(R.id.pbProfileImage);
+            imgEditImage=(ImageView) itemView.findViewById(R.id.imgEditImage);
+
         }
     }
 

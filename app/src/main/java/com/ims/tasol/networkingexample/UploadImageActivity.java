@@ -3,12 +3,15 @@ package com.ims.tasol.networkingexample;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -33,6 +36,8 @@ import com.ims.tasol.networkingexample.retrofit.RaytaServiceClass;
 import com.ims.tasol.networkingexample.utils.InternetConnection;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
+
 import java.io.File;
 
 import static android.R.attr.action;
@@ -48,6 +53,7 @@ public class UploadImageActivity extends AppCompatActivity {
     ImageView imageView;
     TextView textView;
     Button btnChooseImage,btnUpload;
+    int INT_STDID=1;
     @Override
     protected void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,10 +65,20 @@ public class UploadImageActivity extends AppCompatActivity {
         btnChooseImage=(Button)findViewById(R.id.btnChooseImage);
         btnUpload=(Button)findViewById(R.id.btnUpload);
 
+        INT_STDID=getIntent().getIntExtra("INT_STDID",1);
+
         btnChooseImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showImagePopup(view);
+                int checkPermission = ContextCompat.checkSelfPermission(UploadImageActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE);
+                if (checkPermission != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(
+                            UploadImageActivity.this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 201);
+                } else {
+                    showImagePopup(view);
+                }
+
             }
         });
         btnUpload.setOnClickListener(new View.OnClickListener() {
@@ -99,7 +115,7 @@ public class UploadImageActivity extends AppCompatActivity {
         MultipartBody.Part body =
                 MultipartBody.Part.createFormData("uploaded_file", file.getName(), requestFile);
 
-        Call<Result> resultCall=service.uploadImage(body,3);
+        Call<Result> resultCall=service.uploadImage(body,INT_STDID);
         Log.v("@@@@WWE","REquest "+resultCall.toString());
         final Result[] result = {new Result()};
 
@@ -111,7 +127,9 @@ public class UploadImageActivity extends AppCompatActivity {
                 result[0] =response.body();
                 Log.v("@@@WWE","Response Result "+result[0].getResult());
                 if(response.isSuccessful()){
-                    Toast.makeText(UploadImageActivity.this,"Sucess",Toast.LENGTH_LONG).show();
+                    Toast.makeText(UploadImageActivity.this,"Sucess",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UploadImageActivity.this,"Press Refresh Button",Toast.LENGTH_LONG).show();
+                    supportFinishAfterTransition();
                 }
             }
 

@@ -4,9 +4,12 @@ import com.ims.tasol.networkingexample.model.AddUser;
 import com.ims.tasol.networkingexample.model.DataPojo;
 import com.ims.tasol.networkingexample.model.ListData;
 import com.ims.tasol.networkingexample.model.Result;
+import com.ims.tasol.networkingexample.model.StudentDataList;
 import com.ims.tasol.networkingexample.model.Task;
 import com.ims.tasol.networkingexample.model.TaskData;
 import com.ims.tasol.networkingexample.utils.HttpConstants;
+
+import javax.security.auth.callback.Callback;
 
 import okhttp3.MultipartBody;
 import retrofit2.Call;
@@ -25,7 +28,7 @@ import retrofit2.http.Query;
 public interface RaytaApi {
     @Multipart
     @POST(HttpConstants.FILEUPLOADJSON1)
-    Call<Result>uploadImage(@Part MultipartBody.Part file,@Query("stdID")int stdID);
+    Call<Result>uploadImage(@Part MultipartBody.Part file,@Part("stdID")int stdID);
 
     @GET(".")
     Call<ListData>getAllUser();
@@ -39,7 +42,7 @@ public interface RaytaApi {
     @GET(HttpConstants.USERDATAJSON)
     Call<AddUser>deleteUser(@Query("method")String method,@Query("stdID")int stdID);
 
-    @GET(HttpConstants.USERDATAJSON)
-    Call<ListData>getSingleUserObj(@Body Task method);
+    @POST(HttpConstants.SINGLEUSER)
+    Call<StudentDataList>getSingleUserObj(@Body Task method);
 
 }
