@@ -17,13 +17,17 @@ import com.ims.tasol.networkingexample.model.AddUser;
 import com.ims.tasol.networkingexample.model.DataPojo;
 import com.ims.tasol.networkingexample.model.ListData;
 import com.ims.tasol.networkingexample.retrofit.RaytaApi;
+import com.ims.tasol.networkingexample.retrofit.RaytaApiClient;
 import com.ims.tasol.networkingexample.retrofit.RaytaServiceClass;
 import com.ims.tasol.networkingexample.retrofit.ServiceClass;
 import com.ims.tasol.networkingexample.retrofit.ServiceInterface;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -83,8 +87,9 @@ public class AddNewUser extends AppCompatActivity {
     }
 
     public void addUser(DataPojo pojo){
-          RaytaApi raytaApi= RaytaServiceClass.getApiService();
+          RaytaApi raytaApi= RaytaApiClient.getApiService();
         Call<AddUser>call=raytaApi.addupdateUser("addNewUser",pojo.getUserId(),pojo.getUserName(),pojo.getUserId());
+        Log.v("@@@WWE","Request Params : "+call.request().toString());
         call.enqueue(new Callback<AddUser>() {
             @Override
             public void onResponse(Call<AddUser> call, Response<AddUser> response) {
@@ -102,8 +107,22 @@ public class AddNewUser extends AppCompatActivity {
     }
 
     public void updateUser(DataPojo pojo){
-        RaytaApi raytaApi= RaytaServiceClass.getApiService();
-        Call<AddUser>call=raytaApi.addupdateUser("updateUser",pojo.getUserId(),pojo.getUserName(),pojo.getUserId());
+        RaytaApi raytaApi= RaytaApiClient.getApiService();
+
+        Call<AddUser>call=raytaApi.addupdateUser("updateUser",pojo.getUserId(),pojo.getUserName(),Integer.parseInt(pojo.getUserAge()));
+
+        String url=call.request().url().toString();
+        String subUrl=url.substring((url.indexOf("?")+1));
+        List<String> paramList=Arrays.asList(subUrl.split("&"));
+        Log.v("@@@WWE","Request Call : "+call.request().toString());
+        Log.v("@@@WWE","Request Method : "+call.request().method().toString());
+        Log.v("@@@WWE","Request Url : "+url);
+        Log.v("@@@WWE","Request Sub Url : "+subUrl);
+
+        for (int i=0;i<paramList.size();i++){
+            Log.v("@@@WWE","Params : "+paramList.get(i));
+        }
+
         call.enqueue(new Callback<AddUser>() {
             @Override
             public void onResponse(Call<AddUser> call, Response<AddUser> response) {

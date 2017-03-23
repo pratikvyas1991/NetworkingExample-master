@@ -9,6 +9,8 @@ import com.ims.tasol.networkingexample.model.Task;
 import com.ims.tasol.networkingexample.model.TaskData;
 import com.ims.tasol.networkingexample.utils.HttpConstants;
 
+import java.util.HashMap;
+
 import javax.security.auth.callback.Callback;
 
 import okhttp3.MultipartBody;
@@ -44,5 +46,8 @@ public interface RaytaApi {
 
     @POST(HttpConstants.SINGLEUSER)
     Call<StudentDataList>getSingleUserObj(@Body Task method);
+
+    @POST(HttpConstants.SINGLEUSER)
+    Call<StudentDataList>getSingleUserHash(@Query("reqObject") Task method);
 
 }

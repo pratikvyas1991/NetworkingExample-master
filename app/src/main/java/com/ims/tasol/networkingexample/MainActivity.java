@@ -9,6 +9,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -30,6 +32,8 @@ import com.ims.tasol.networkingexample.retrofit.RaytaServiceClass;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import retrofit2.Call;
@@ -114,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getAllUsers(){
-        RaytaApi service= RaytaServiceClass.getApiService();
+        RaytaApi service= RaytaApiClient.getApiService();
         Call<ListData> call=service.getAllUser();
         Log.v("@@@WWE","Retrofit Request Method =  "+call.request().method());
         Log.v("@@@WWE","Retrofit Request Body =  "+call.request().body());
@@ -141,6 +145,55 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
+    public void getSingleUserAd(){
+        TaskData taskData = new TaskData();
+        taskData.setUserID("1");
+        Task task= new Task();
+        task.setTask("singleUser");
+        task.setTaskData(taskData);
+
+        RaytaApi service= RaytaApiClient.getApiService();
+
+        HashMap<String,Task> taskMap = new HashMap<>();
+        taskMap.put("reqObject",task);
+
+        Call<StudentDataList>call=service.getSingleUserHash(task);
+
+        String url=call.request().url().toString();
+        String subUrl=url.substring((url.indexOf("?")+1));
+        List<String> paramList= Arrays.asList(subUrl.split("&"));
+        Log.v("@@@WWE","SingleUser Request Call : "+call.request().toString());
+        Log.v("@@@WWE","SingleUser Request Method : "+call.request().method().toString());
+        Log.v("@@@WWE","SingleUser Request Url : "+url);
+        Log.v("@@@WWE","Request Sub Url : "+subUrl);
+
+        for (int i=0;i<paramList.size();i++){
+            Log.v("@@@WWE","Params : "+paramList.get(i));
+        }
+
+
+        call.enqueue(new Callback<StudentDataList>() {
+            @Override
+            public void onResponse(Call<StudentDataList> call, Response<StudentDataList> response) {
+
+                Log.v("@@@WWE","Response SingleUser");
+                List<StudentData> list=new ArrayList<StudentData>();
+                if (response.isSuccessful()){
+                    Log.v("@@@WWE","Sucess Single User Details");
+                    list=response.body().getData();
+                    printSingleStudentDetails(list);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<StudentDataList> call, Throwable t) {
+                Log.v("@@@WWE","Failure SingleUser");
+                Log.v("@@@WWE","Failure Message "+t.getMessage());
+            }
+        });
+    }
+
     public void getSingleUser(){
         TaskData taskData = new TaskData();
         taskData.setUserID("1");
@@ -149,10 +202,23 @@ public class MainActivity extends AppCompatActivity {
         task.setTaskData(taskData);
 
         RaytaApi service= RaytaApiClient.getApiService();
+
+
         Call<StudentDataList>call=service.getSingleUserObj(task);
-        Log.v("@@@WWE","Retrofit Request Method =  "+call.request().method());
-        Log.v("@@@WWE","Retrofit Request Body =  "+call.request().body().contentType());
-        Log.v("@@@WWE","Retrofit Request Url = "+call.request().url());
+
+        String url=call.request().url().toString();
+        String subUrl=url.substring((url.indexOf("?")+1));
+        List<String> paramList= Arrays.asList(subUrl.split("&"));
+        Log.v("@@@WWE","Request Call : "+call.request().toString());
+        Log.v("@@@WWE","Request Method : "+call.request().method().toString());
+        Log.v("@@@WWE","Request Url : "+url);
+        Log.v("@@@WWE","Request Sub Url : "+subUrl);
+
+        for (int i=0;i<paramList.size();i++){
+            Log.v("@@@WWE","Params : "+paramList.get(i));
+        }
+
+
         call.enqueue(new Callback<StudentDataList>() {
             @Override
             public void onResponse(Call<StudentDataList> call, Response<StudentDataList> response) {
@@ -172,24 +238,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.v("@@@WWE","Failure Message "+t.getMessage());
             }
         });
-//        Call<ListData> call=service.getSingleUserObj("",task);
-//        call.enqueue(new Callback<ListData>() {
-//            @Override
-//            public void onResponse(Call<ListData> call, Response<ListData> response) {
-//                Log.v("@@@","Response");
-//                if (response.isSuccessful()){
-//                    Log.v("@@@","Sucess Single User Details");
-//                    dataList=response.body().getData();
-//                    printStudentDetails(dataList);
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<ListData> call, Throwable t) {
-//                Log.v("@@@","Response");
-//            }
-//        });
     }
+
     public void printStudentDetails(List<DataPojo> list){
         Log.v("@@@WWe","Student List");
         for (DataPojo dataPojo:list){
@@ -312,5 +362,21 @@ public class MainActivity extends AppCompatActivity {
                 Log.v("@@@","Response");
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id=item.getItemId();
+        if(id==R.id.menu_add_single){
+//            getAllUsers();
+            getSingleUserAd();
+        }
+        return true;
     }
 }
