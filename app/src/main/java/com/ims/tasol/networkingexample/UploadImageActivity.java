@@ -54,6 +54,11 @@ public class UploadImageActivity extends AppCompatActivity {
     TextView textView;
     Button btnChooseImage,btnUpload;
     int INT_STDID=1;
+    String UPLOAD_TYPE="";
+    private static final int SELECT_FILE1 = 1;
+    private static final int SELECT_FILE2 = 2;
+    String selectedPath1 = "NONE";
+    String selectedPath2 = "NONE";
     @Override
     protected void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -157,6 +162,7 @@ public class UploadImageActivity extends AppCompatActivity {
             startActivityForResult(chooserIntent, 1010);
 //        }
     }
+
     private void startPermissionsActivity(String[] permission) {
         PermissionsActivity.startActivityForResult(this, 0, permission);
     }
@@ -164,6 +170,7 @@ public class UploadImageActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (resultCode == RESULT_OK && requestCode == 1010) {
             if (data == null) {
                 Toast.makeText(UploadImageActivity.this,"Unable to Pickup Image",Toast.LENGTH_LONG).show();
@@ -195,4 +202,6 @@ public class UploadImageActivity extends AppCompatActivity {
             }
         }
     }
+
+
 }

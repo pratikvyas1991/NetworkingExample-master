@@ -135,11 +135,14 @@ public class MainActivity extends AppCompatActivity {
                     userAdapter.notifyDataSetChanged();
                     printStudentDetails(dataList);
                 }
+                if(response.code()==400){
+                    Toast.makeText(MainActivity.this,"400 code ",Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override
             public void onFailure(Call<ListData> call, Throwable t) {
-                Log.v("@@@","Response");
+                Log.v("@@@","Faulire");
                 pbLoader.setVisibility(View.GONE);
             }
         });
@@ -301,8 +304,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+
             Picasso.with(MainActivity.this)
-                    .load(dataList.get(position).getProfilePhoto())
+                    .load(dataList.get(position).getProfilePhoto()==null? "":dataList.get(position).getProfilePhoto())
                     .placeholder(R.drawable.placeholder)
                     .error(R.drawable.error)
                     .resize(370,200)
@@ -374,8 +378,9 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id=item.getItemId();
         if(id==R.id.menu_add_single){
-//            getAllUsers();
-            getSingleUserAd();
+//            getSingleUserAd();
+            Intent intent=new Intent(MainActivity.this,UploadMultipleImageActivity.class);
+            startActivity(intent);
         }
         return true;
     }

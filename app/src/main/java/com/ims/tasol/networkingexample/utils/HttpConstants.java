@@ -9,6 +9,7 @@ public class HttpConstants {
     public static final String USERDATAJSON="/studentdetails.php";
     public static final String FILEUPLOADJSON="/uploadImage.php";
     public static final String FILEUPLOADJSON1="/upload.php";
+    public static final String FILEMULTIPLEUPLOAD="/multipleimage.php";
 
     public static final String SINGLEUSER="/singleUserData.php";
 
