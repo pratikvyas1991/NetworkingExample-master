@@ -26,6 +26,16 @@ public class DataPojo {
         this.userId = userId;
     }
 
+    public DataPojo() {
+    }
+
+    public DataPojo(int userId, String userName, String userAge, String profilePhoto) {
+        this.userId = userId;
+        this.userName = userName;
+        this.userAge = userAge;
+        this.profilePhoto = profilePhoto;
+    }
+
     public String getUserName() {
         return userName;
     }

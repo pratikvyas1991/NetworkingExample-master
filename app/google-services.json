@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "213778555795",
+    "firebase_url": "https://virtualpixels-90bf6.firebaseio.com",
+    "project_id": "virtualpixels-90bf6",
+    "storage_bucket": "virtualpixels-90bf6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:213778555795:android:cf257ba8dd0e62f9",
+        "android_client_info": {
+          "package_name": "com.ims.tasol.networkingexample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "213778555795-5q7ggencn8dnbbdbcdi3i1259h78n85n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ims.tasol.networkingexample",
+            "certificate_hash": "1e3117132ab146f7019fa83719d533202140e91d"
+          }
+        },
+        {
+          "client_id": "213778555795-5dnkp4lm3jvq8ss825frvsjm415p47li.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABFMNNkNaiMg-JE84B5wBOPFHHLemSeck"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "213778555795-5dnkp4lm3jvq8ss825frvsjm415p47li.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
